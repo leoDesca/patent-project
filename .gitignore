@@ -1,0 +1,43 @@
+# =========================
+# USPTO / Patent dataset files (CRITICAL)
+# =========================
+*.tsv
+*.tsv.zip
+*.zip
+
+# If your data is inside a folder (recommended)
+data/
+datasets/
+
+# =========================
+# Python cache
+# =========================
+__pycache__/
+*.py[cod]
+
+# =========================
+# Virtual environments
+# =========================
+venv/
+.venv/
+
+# =========================
+# Environment variables
+# =========================
+.env
+
+# =========================
+# Jupyter Notebook checkpoints
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# VS Code settings
+# =========================
+.vscode/
+
+# =========================
+# Logs / temp files
+# =========================
+*.log
+*.tmp
