@@ -1,6 +1,4 @@
-# clean_data.py
-# Purpose: Clean and reshape the raw data, fix missing values,
-#          build the final tables that match the assignment schema
+
 
 import pandas as pd
 import os
@@ -17,38 +15,38 @@ def clean_patents(patents_df, abstracts_df, apps_df):
       patent_id | title | abstract | filing_date | year
     """
     print("\nCleaning patents...")
- # Ensure patent_id is consistent type across all dataframes
+ 
     patents_df["patent_id"] = patents_df["patent_id"].astype(str)
     abstracts_df["patent_id"] = abstracts_df["patent_id"].astype(str)
     apps_df["patent_id"] = apps_df["patent_id"].astype(str)
-    # Rename columns to match assignment schema
+
     patents_df = patents_df.rename(columns={
         "patent_title": "title",
         "patent_date":  "grant_date"
     })
 
-    # Merge abstract in
+    
     df = patents_df.merge(abstracts_df, on="patent_id", how="left")
 
-    # Merge filing date in
+    
     df = df.merge(apps_df[["patent_id", "filing_date"]], on="patent_id", how="left")
 
-    # Rename abstract column
+
     df = df.rename(columns={"patent_abstract": "abstract"})
 
-    # Drop rows with no title
+    
     df = df.dropna(subset=["title"])
 
-    # Clean title: strip whitespace
+    
     df["title"] = df["title"].str.strip()
 
-    # Extract year from grant_date (format: YYYY-MM-DD)
+    
     df["year"] = pd.to_datetime(df["grant_date"], errors="coerce").dt.year
 
     # Keep only the columns we need
     df = df[["patent_id", "title", "abstract", "filing_date", "year"]].copy()
 
-    # Drop duplicate patent IDs
+
     df = df.drop_duplicates(subset="patent_id")
 
     print(f"  -> Clean patents: {len(df):,} rows")
@@ -69,7 +67,7 @@ def clean_inventors(inventors_df, locations_df):
         inventors_df["disambig_inventor_name_last"].fillna("")
     ).str.strip()
 
-    # Merge location info to get country
+    #location
     df = inventors_df.merge(
         locations_df[["location_id", "disambig_country"]],
         on="location_id",
@@ -77,11 +75,11 @@ def clean_inventors(inventors_df, locations_df):
     )
     df = df.rename(columns={"disambig_country": "country"})
 
-    # Keep only unique inventors
+    
     inventors_clean = df[["inventor_id", "name", "country"]].drop_duplicates(subset="inventor_id")
     inventors_clean = inventors_clean.dropna(subset=["inventor_id"])
 
-    # Keep the crosswalk (patent_id <-> inventor_id) separate
+    
     crosswalk = df[["patent_id", "inventor_id"]].drop_duplicates()
 
     print(f"  -> Unique inventors: {len(inventors_clean):,}")
@@ -96,7 +94,7 @@ def clean_companies(assignees_df, locations_df):
     """
     print("Cleaning companies...")
 
-    # Use organization name; if blank, combine individual names
+    
     assignees_df["name"] = assignees_df["disambig_assignee_organization"].fillna(
         assignees_df["disambig_assignee_individual_name_first"].fillna("") + " " +
         assignees_df["disambig_assignee_individual_name_last"].fillna("")
@@ -115,7 +113,7 @@ def clean_companies(assignees_df, locations_df):
     ).drop_duplicates(subset="company_id")
     companies_clean = companies_clean.dropna(subset=["company_id"])
 
-    # Crosswalk
+    
     crosswalk = df[["patent_id", "assignee_id"]].rename(
         columns={"assignee_id": "company_id"}
     ).drop_duplicates()
@@ -126,7 +124,7 @@ def clean_companies(assignees_df, locations_df):
 
 
 if __name__ == "__main__":
-    # Load raw data
+    
     patents_raw   = load_patents()
     abstracts_raw = load_abstracts()
     inventors_raw = load_inventors()
@@ -134,7 +132,7 @@ if __name__ == "__main__":
     locations_raw = load_locations()
     apps_raw      = load_applications()
 
-    # Clean
+    
     patents_clean                      = clean_patents(patents_raw, abstracts_raw, apps_raw)
     inventors_clean, inventor_crosswalk = clean_inventors(inventors_raw, locations_raw)
     companies_clean, company_crosswalk  = clean_companies(assignees_raw, locations_raw)

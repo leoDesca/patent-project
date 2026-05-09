@@ -1,5 +1,4 @@
--- queries.sql
--- All SQL queries for the patent analysis assignment
+
 
 -- Q1: Top Inventors (who has the most patents?)
 SELECT

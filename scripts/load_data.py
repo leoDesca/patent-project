@@ -1,13 +1,11 @@
-# load_data.py
-# Purpose: Load the raw TSV zip files from PatentsView into pandas DataFrames
-# We only load a sample (100,000 rows) to keep things manageable
+
 
 import pandas as pd
 import os
 
-DATA_DIR = "data"  # folder where you put your zip files
+DATA_DIR = "data"  
 
-def load_tsv_zip(filename, usecols, nrows=100000):
+def load_tsv_zip(filename, usecols, nrows=3000000):
     """Helper function to load a TSV zip file with selected columns"""
     path = os.path.join(DATA_DIR, filename)
     print(f"Loading {filename}...")
@@ -71,7 +69,7 @@ def load_cpc():
 
 
 if __name__ == "__main__":
-    # Test all loaders
+
     patents    = load_patents()
     abstracts  = load_abstracts()
     inventors  = load_inventors()

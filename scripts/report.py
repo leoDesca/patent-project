@@ -1,8 +1,4 @@
-# report.py
-# Purpose: Run all queries and generate the 3 required report types:
-#   1. Console report (printed to terminal)
-#   2. CSV exports (top_inventors.csv, top_companies.csv, country_trends.csv)
-#   3. JSON report (report.json)
+
 
 import sqlite3
 import pandas as pd
@@ -16,7 +12,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 conn = sqlite3.connect(DB_PATH)
 
 
-# ── Run all queries ──────────────────────────────────────────────────────────
+#Run all queries 
 
 total_patents = pd.read_sql("SELECT COUNT(*) AS n FROM patents", conn).iloc[0]["n"]
 
@@ -73,7 +69,7 @@ ranked_inventors = pd.read_sql("""
 conn.close()
 
 
-# ── 1. Console Report ────────────────────────────────────────────────────────
+# Console Report 
 
 print("=" * 55)
 print("           GLOBAL PATENT INTELLIGENCE REPORT")
@@ -109,7 +105,7 @@ for _, row in ranked_inventors.head(10).iterrows():
 print("\n" + "=" * 55)
 
 
-# ── 2. CSV Exports ───────────────────────────────────────────────────────────
+# CSV Exports
 
 top_inventors.to_csv(os.path.join(OUTPUT_DIR, "top_inventors.csv"), index=False)
 top_companies.to_csv(os.path.join(OUTPUT_DIR, "top_companies.csv"), index=False)
@@ -119,7 +115,7 @@ yearly_trends.to_csv(os.path.join(OUTPUT_DIR, "yearly_trends.csv"), index=False)
 print("\nCSV files saved to /output/")
 
 
-# ── 3. JSON Report ───────────────────────────────────────────────────────────
+#JSON Report
 
 report = {
     "total_patents": int(total_patents),
