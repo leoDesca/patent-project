@@ -193,44 +193,7 @@ with col2:
     ax.set_xlabel("Patents"); ax.grid(True, axis="x")
     st.pyplot(fig); plt.close()
 
-# ── CPC categories ────────────────────────────────────────────────────────────
-st.markdown('<div class="block-title">Patent Distribution by Technology Category (CPC)</div>', unsafe_allow_html=True)
-try:
-    cpc = pd.read_csv(
-        "data/g_cpc_current.tsv.zip", sep="\t", compression="zip",
-        usecols=["patent_id", "cpc_section"],
-        nrows=3000000, low_memory=False, on_bad_lines="skip"
-    )
-    cpc_counts = (cpc.groupby("cpc_section")["patent_id"]
-                     .count().reset_index()
-                     .rename(columns={"patent_id": "total"})
-                     .sort_values("total", ascending=False))
-    cpc_labels = {
-        "A": "A · Human Necessities",  "B": "B · Operations & Transport",
-        "C": "C · Chemistry",           "D": "D · Textiles",
-        "E": "E · Construction",        "F": "F · Mechanical Engineering",
-        "G": "G · Physics",             "H": "H · Electricity",
-        "Y": "Y · Emerging Tech"
-    }
-    cpc_counts["label"] = cpc_counts["cpc_section"].map(cpc_labels).fillna(cpc_counts["cpc_section"])
-    colors = [BLUE, GREEN, RED, PURPLE, ORANGE, "#79c0ff", "#56d364", "#ff7b72", "#e3b341"]
 
-    col1, col2 = st.columns(2)
-    with col1:
-        st.dataframe(cpc_counts[["label", "total"]], use_container_width=True, hide_index=True)
-    with col2:
-        fig, ax = plt.subplots(figsize=(6, 6))
-        wedges, texts, autos = ax.pie(
-            cpc_counts["total"], labels=cpc_counts["label"],
-            autopct="%1.1f%%", startangle=140,
-            colors=colors[:len(cpc_counts)],
-            pctdistance=0.78, wedgeprops=dict(width=0.5)
-        )
-        for t in texts:  t.set_color("#c9d1d9"); t.set_fontsize(8)
-        for t in autos:  t.set_color("white");   t.set_fontsize(8)
-        st.pyplot(fig); plt.close()
-except Exception as e:
-    st.info(f"CPC data not available: {e}")
 
 # ── Patent search ─────────────────────────────────────────────────────────────
 st.markdown('<div class="block-title">Search Patents by Keyword</div>', unsafe_allow_html=True)
