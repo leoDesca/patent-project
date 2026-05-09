@@ -61,7 +61,7 @@ def get_conn():
 def query(sql):
     return pd.read_sql(sql, get_conn())
 
-# ── Sidebar filters ───────────────────────────────────────────────────────────
+#  Sidebar filters 
 with st.sidebar:
     st.markdown("## 🔬 Patent Intelligence")
     st.markdown("**Data:** USPTO PatentsView")
@@ -76,11 +76,11 @@ with st.sidebar:
     min_yr, max_yr = st.slider("Year range", data_min, data_max, (1990, data_max))
     country_filter = st.text_input("Filter inventors by country (e.g. US)", "")
 
-# ── Page title ────────────────────────────────────────────────────────────────
+# Page title 
 st.markdown("# 🔬 Global Patent Intelligence Dashboard")
 st.markdown(f"Showing data from **{min_yr}** to **{max_yr}** · Source: USPTO PatentsView ({data_min}–{data_max})")
 
-# ── Summary metrics ───────────────────────────────────────────────────────────
+#Summary metrics 
 total   = query("SELECT COUNT(*) AS n FROM patents").iloc[0]["n"]
 num_inv = query("SELECT COUNT(*) AS n FROM inventors").iloc[0]["n"]
 num_co  = query("SELECT COUNT(*) AS n FROM companies WHERE name IS NOT NULL AND name != ''").iloc[0]["n"]
@@ -92,7 +92,7 @@ c2.metric("Unique Inventors", f"{int(num_inv):,}")
 c3.metric("Unique Companies", f"{int(num_co):,}")
 c4.metric("Countries",        f"{int(num_cty):,}")
 
-# ── Patents per year ──────────────────────────────────────────────────────────
+# Patents per year 
 st.markdown('<div class="block-title">Patents Granted Per Year</div>', unsafe_allow_html=True)
 yearly = query(f"""
     SELECT year, COUNT(patent_id) AS total FROM patents
@@ -106,7 +106,7 @@ ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{int(x):,}"))
 ax.set_xlabel("Year"); ax.set_ylabel("Patents"); ax.grid(True)
 st.pyplot(fig); plt.close()
 
-# ── Year over year growth ─────────────────────────────────────────────────────
+# ── Year over year growth 
 st.markdown('<div class="block-title">Year-over-Year Growth Rate (%)</div>', unsafe_allow_html=True)
 yearly2 = query("""
     SELECT year, COUNT(patent_id) AS total FROM patents
@@ -121,7 +121,7 @@ ax.axhline(0, color="#c9d1d9", linewidth=0.8)
 ax.set_xlabel("Year"); ax.set_ylabel("Growth %"); ax.grid(True, axis="y")
 st.pyplot(fig); plt.close()
 
-# ── Decade comparison ─────────────────────────────────────────────────────────
+# Decade comparison
 st.markdown('<div class="block-title">Total Patents by Decade</div>', unsafe_allow_html=True)
 decade = query("""
     SELECT (year/10)*10 AS decade, COUNT(patent_id) AS total
@@ -138,7 +138,7 @@ ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{int(x):,}"))
 ax.set_xlabel("Decade"); ax.set_ylabel("Patents"); ax.grid(True, axis="y")
 st.pyplot(fig); plt.close()
 
-# ── Top inventors + companies side by side ────────────────────────────────────
+# Top inventors + companies 
 st.markdown('<div class="block-title">Top Inventors and Companies</div>', unsafe_allow_html=True)
 left, right = st.columns(2)
 
@@ -175,7 +175,7 @@ with right:
     ax.set_xlabel("Patents"); ax.grid(True, axis="x")
     st.pyplot(fig); plt.close()
 
-# ── Countries ─────────────────────────────────────────────────────────────────
+#Countries 
 st.markdown('<div class="block-title">Top Countries by Patent Count</div>', unsafe_allow_html=True)
 cntry = query(f"""
     SELECT i.country, COUNT(DISTINCT r.patent_id) AS patents,
@@ -195,7 +195,7 @@ with col2:
 
 
 
-# ── Patent search ─────────────────────────────────────────────────────────────
+#Patent search
 st.markdown('<div class="block-title">Search Patents by Keyword</div>', unsafe_allow_html=True)
 keyword = st.text_input("Enter a keyword to search patent titles", placeholder="e.g. solar, battery, artificial intelligence")
 if keyword:
